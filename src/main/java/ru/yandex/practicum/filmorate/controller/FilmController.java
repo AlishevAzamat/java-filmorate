@@ -15,9 +15,9 @@ import java.util.Map;
 @RestController
 public class FilmController {
     Map<Integer, Film> films = new HashMap<>();
-    int generatorId = 1;
-    final int LENGTH = 200;
-    final LocalDate DATE = LocalDate.of(1895, 12, 28);
+    private int generatorId = 1;
+    private final int length = 200;
+    private final LocalDate date = LocalDate.of(1895, 12, 28);
 
     @PostMapping("/films")
     public Film add(@RequestBody @Validated Film film) throws ValidationException {
@@ -25,13 +25,13 @@ public class FilmController {
             log.info("Название фильма пустое");
             throw new ValidationException("Название фильма пустое");
         }
-        if (film.getDescription().length() > LENGTH) {
-            log.info("Длина описания должна быть не больше " + LENGTH + " символов");
-            throw new ValidationException("Длина описания должна быть не больше " + LENGTH + " символов");
+        if (film.getDescription().length() > length) {
+            log.info("Длина описания должна быть не больше " + length + " символов");
+            throw new ValidationException("Длина описания должна быть не больше " + length + " символов");
         }
-        if (film.getReleaseDate().isBefore(DATE)) {
-            log.info("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + DATE);
-            throw new ValidationException("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + DATE);
+        if (film.getReleaseDate().isBefore(date)) {
+            log.info("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
+            throw new ValidationException("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
         }
         if (film.getDuration() < 0) {
             log.info("Продолжительность фильма не должна быть отрицательной");
