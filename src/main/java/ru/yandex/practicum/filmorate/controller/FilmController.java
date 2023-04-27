@@ -15,9 +15,9 @@ import java.util.Map;
 @RestController
 public class FilmController {
     Map<Integer, Film> films = new HashMap<>();
-    private int generatorId = 1;
-    private final int LENGTH = 200;
-    private final LocalDate DATE = LocalDate.of(1895, 12, 28);
+    int generatorId = 1;
+    final int LENGTH = 200;
+    final LocalDate DATE = LocalDate.of(1895, 12, 28);
 
     @PostMapping("/films")
     public Film add(@RequestBody @Validated Film film) throws ValidationException {
