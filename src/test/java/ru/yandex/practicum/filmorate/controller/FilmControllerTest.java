@@ -9,28 +9,29 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class FilmControllerTest {
 
     @Autowired
-    private FilmController filmController;
+    FilmController filmController;
 
     @Test
-    @DisplayName("Создание фильма")
+    @DisplayName("Создание фильма (проверка даты публикации фильма)")
     void addFilms_errorChecking() throws ValidationException {
         Film film = new Film();
-        film.setName("Тест");
+        film.setName("");
         film.setDescription("Тест");
-        film.setReleaseDate(LocalDate.of(2222, 1, 1));
+        film.setReleaseDate(LocalDate.of(1800, 1, 1));
         film.setDuration(10);
 
-        Film add = filmController.add(film);
-        assertAll(
-                () -> assertEquals(1, add.getId()),
-                () -> assertEquals("Тест", add.getName())
-        );
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            filmController.add(film);
+        });
+        assertEquals("Дата публикации фильма раньше положенного, фильм должен быть опубликован " +
+                        "не раньше чем - 1895-12-28"
+                , exception.getMessage());
     }
 }
