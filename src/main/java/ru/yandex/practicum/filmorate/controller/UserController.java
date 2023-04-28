@@ -24,18 +24,7 @@ public class UserController {
     @NotBlank
     @PostMapping("/users")
     public User add(@RequestBody @Valid User user) throws ValidationException {
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.info("Логин не может быть пустым и содержать пробелы");
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.info("Дата рождения не может быть в будущем");
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.info("Пользователь не заполнил Имя");
-            user.setName(user.getLogin());
-        }
+        check(user);
         user.setId(generatorId++);
         users.put(user.getId(), user);
         log.info("Добавлен пользователь под именем " + user.getName());
@@ -57,5 +46,20 @@ public class UserController {
     public Collection<User> get() {
         log.info("Текущее количество пользователей: {}", users.size());
         return users.values();
+    }
+
+    private void check(User user) {
+        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+            log.info("Логин не может быть пустым и содержать пробелы");
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.info("Дата рождения не может быть в будущем");
+            throw new ValidationException("Дата рождения не может быть в будущем");
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
+            log.info("Пользователь не заполнил Имя");
+            user.setName(user.getLogin());
+        }
     }
 }

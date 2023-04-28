@@ -21,10 +21,7 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film add(@RequestBody @Valid Film film) throws ValidationException {
-        if (film.getReleaseDate().isBefore(date)) {
-            log.info("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
-            throw new ValidationException("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
-        }
+        check(film);
         film.setId(generatorId++);
         films.put(film.getId(), film);
         log.info("Добавлен фильм под названием " + film.getName());
@@ -46,5 +43,12 @@ public class FilmController {
     public Collection<Film> get() {
         log.info("Текущее количество фильмов: {}", films.size());
         return films.values();
+    }
+
+    private void check(Film film) {
+        if (film.getReleaseDate().isBefore(date)) {
+            log.info("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
+            throw new ValidationException("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
+        }
     }
 }
