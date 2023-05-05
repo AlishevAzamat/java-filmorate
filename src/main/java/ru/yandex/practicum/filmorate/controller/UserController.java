@@ -1,65 +1,69 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int generatorId = 1;
+    private final UserService userService;
 
-
-    @NotNull
-    @NotBlank
-    @PostMapping("/users")
-    public User add(@RequestBody @Valid User user) throws ValidationException {
-        check(user);
-        user.setId(generatorId++);
-        users.put(user.getId(), user);
-        log.info("Добавлен пользователь под именем " + user.getName());
-        return user;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PutMapping("/users")
-    public User put(@RequestBody @Valid User user) throws Exception {
-        if (!users.containsKey(user.getId())) {
-            log.info("Пользователь " + user.getId() + " не найден");
-            throw new Exception("Пользователь не найден");
-        }
-        users.put(user.getId(), user);
-        log.info("Пользователь " + user.getName() + " под номерам ID - " + user.getId() + " обновлен");
-        return user;
+    @PostMapping(path = "/users")
+    public Optional<User> add(@RequestBody @Valid User user) throws ValidationException {
+        return userService.add(user);
     }
 
-    @GetMapping("/users")
+    @PutMapping(path = "/users")
+    public Optional<User> put(@RequestBody @Valid User user) throws Exception {
+        return userService.put(user);
+    }
+
+    @PutMapping(path = "/users/{id}/friends/{friendId}")
+    public String addFriends(@PathVariable(value = "id") Long id,
+                             @PathVariable(value = "friendId") Long friendId) {
+        userService.addFriends(id, friendId);
+        return "Пользователь добавлен в друзья";
+    }
+
+    @GetMapping(path = "/users")
     public Collection<User> get() {
-        log.info("Текущее количество пользователей: {}", users.size());
-        return users.values();
+        return userService.get();
     }
 
-    private void check(User user) {
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.info("Логин не может быть пустым и содержать пробелы");
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.info("Дата рождения не может быть в будущем");
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.info("Пользователь не заполнил Имя");
-            user.setName(user.getLogin());
-        }
+    @GetMapping(path = "/users/{id}")
+    public Optional<User> getUserById(@PathVariable(value = "id") Long id) {
+        return userService.getUserByID(id);
     }
+
+    @GetMapping(path = "users/{id}/friends")
+    public List<User> getFriends(@PathVariable(value = "id") Long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping(path = "/users/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable(value = "id") Long id, @PathVariable(value = "otherId") Long otherID) {
+        return userService.getCommonFriends(id, otherID);
+    }
+
+    @DeleteMapping(path = "/users/{id}/friends/{friendId}")
+    public String deleteFriends(@PathVariable(value = "id") Long id,
+                                @PathVariable(value = "friendId") Long friendId) {
+        userService.deleteFriends(id, friendId);
+        return "Пользователь удален из друзей";
+    }
+
 }
