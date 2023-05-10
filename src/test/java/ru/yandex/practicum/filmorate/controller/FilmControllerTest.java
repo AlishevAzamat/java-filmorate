@@ -30,7 +30,6 @@ class FilmControllerTest {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             filmController.add(film);
         });
-        assertEquals("Дата публикации фильма раньше положенного, фильм должен быть опубликован " +
-                "не раньше чем - 1895-12-28", exception.getMessage());
+        assertEquals("Ошибка валидации", exception.getMessage());
     }
 }
