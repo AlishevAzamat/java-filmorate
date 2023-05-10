@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
@@ -12,23 +10,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
+
 @RestController
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping(path = "/users")
-    public Optional<User> add(@RequestBody @Valid User user) throws ValidationException {
+    public User add(@RequestBody @Valid User user) {
         return userService.add(user);
     }
 
     @PutMapping(path = "/users")
-    public Optional<User> put(@RequestBody @Valid User user) throws Exception {
+    public User put(@RequestBody @Valid User user) {
         return userService.put(user);
     }
 

@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,43 +15,41 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Long, User> users = new HashMap<>();
+    public final Map<Long, User> users = new HashMap<>();
     private Long generatorId = 1L;
 
 
     @Override
-    public Optional<User> add(@RequestBody @Valid User user) throws ValidationException {
-        validate(user);
+    public Optional<User> add(@RequestBody User user) {
+        try {
+            validate(user);
+        } catch (ValidationException e) {
+            return Optional.empty();
+        }
         user.setId(generatorId++);
         users.put(user.getId(), user);
-        log.info("Добавлен пользователь под именем " + user.getName());
         return Optional.of(user);
     }
 
     @Override
-    public Optional<User> put(@RequestBody @Valid User user) {
+    public Optional<User> put(@RequestBody User user) {
         if (!users.containsKey(user.getId())) {
-            log.info("Пользователь " + user.getId() + " не найден");
-            throw new IncorrectParameterException("Пользователь не найден");
+            return Optional.empty();
         }
         users.put(user.getId(), user);
-        log.info("Пользователь " + user.getName() + " под номерам ID - " + user.getId() + " обновлен");
         return Optional.of(user);
     }
 
     @Override
     public Collection<User> get() {
-        log.info("Текущее количество пользователей: {}", users.size());
         return users.values();
     }
 
     @Override
     public Optional<User> getUserByID(Long id) {
         if (!users.containsKey(id)) {
-            log.info("Пользователь под ID-" + id + " , не найден");
-            throw new IncorrectParameterException("Пользователь под ID-" + id + " , не найден");
+            return Optional.empty();
         }
-        log.info("Запрошен пользователем под ID {}", id);
         return Optional.of(users.get(id));
     }
 

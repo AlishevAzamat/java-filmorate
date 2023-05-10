@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
@@ -13,24 +12,18 @@ import java.util.Optional;
 
 
 @RestController
+@RequiredArgsConstructor
 public class FilmController {
-
 
     private final FilmService filmService;
 
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
-
     @PostMapping(path = "/films")
-    public Optional<Film> add(@RequestBody @Valid Film film) throws ValidationException {
+    public Film add(@RequestBody @Valid Film film) {
         return filmService.add(film);
     }
 
     @PutMapping(path = "/films")
-    public Optional<Film> put(@RequestBody @Valid Film film) throws Exception {
+    public Film put(@RequestBody @Valid Film film) {
         return filmService.put(film);
     }
 

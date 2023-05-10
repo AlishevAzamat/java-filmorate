@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,44 +16,42 @@ import java.util.Optional;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Long, Film> films = new HashMap<>();
+    public final Map<Long, Film> films = new HashMap<>();
     private Long generatorId = 1L;
     private final LocalDate date = LocalDate.of(1895, 12, 28);
 
 
     @Override
-    public Optional<Film> add(@RequestBody @Valid Film film) throws ValidationException {
-        validate(film);
+    public Optional<Film> add(@RequestBody Film film) {
+        try {
+            validate(film);
+        } catch (ValidationException e) {
+            return Optional.empty();
+        }
         film.setId(generatorId++);
         films.put(film.getId(), film);
-        log.info("Добавлен фильм под названием " + film.getName());
         return Optional.of(film);
     }
 
     @Override
-    public Optional<Film> put(@RequestBody @Valid Film film) {
+    public Optional<Film> put(@RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
-            log.info("Фильм " + film.getId() + " не найден");
-            throw new IncorrectParameterException("Фильм " + film.getId() + " не найден");
+            return Optional.empty();
         }
         films.put(film.getId(), film);
-        log.info("Фильм " + film.getName() + " под номерам ID - " + film.getId() + " обновлен");
         return Optional.of(film);
     }
 
     @Override
     public Collection<Film> get() {
-        log.info("Текущее количество фильмов: {}", films.size());
         return films.values();
     }
 
     @Override
     public Optional<Film> getFilmById(Long id) {
         if (!films.containsKey(id)) {
-            log.info("Фильм " + id + " не найден");
-            throw new IncorrectParameterException("Фильм " + id + " не найден");
+            return Optional.empty();
         }
-        log.info("Запрошен фильм под ID {}", id);
         return Optional.of(films.get(id));
     }
 
