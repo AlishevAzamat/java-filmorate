@@ -16,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    public final Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
     private Long generatorId = 1L;
     private final LocalDate date = LocalDate.of(1895, 12, 28);
 
@@ -44,6 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> get() {
+        log.info("Текущее количество фильмов: {}", films.size());
         return films.values();
     }
 

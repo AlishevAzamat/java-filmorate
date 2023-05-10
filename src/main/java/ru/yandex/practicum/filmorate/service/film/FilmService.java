@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -22,7 +21,6 @@ public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final InMemoryFilmStorage inMemoryFilmStorage;
 
 
     public Film add(Film film) {
@@ -43,7 +41,6 @@ public class FilmService {
     }
 
     public Collection<Film> get() {
-        log.info("Текущее количество фильмов: {}", inMemoryFilmStorage.films.size());
         return filmStorage.get();
     }
 

@@ -15,7 +15,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    public final Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
     private Long generatorId = 1L;
 
 
@@ -42,6 +42,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Collection<User> get() {
+        log.info("Текущее количество пользователей: {}", users.size());
         return users.values();
     }
 

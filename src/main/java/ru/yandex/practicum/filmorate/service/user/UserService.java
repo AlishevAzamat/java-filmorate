@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ParameterNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
-    private final InMemoryUserStorage inMemoryUserStorage;
 
 
     public User add(User user) {
@@ -43,12 +41,11 @@ public class UserService {
     }
 
     public Collection<User> get() {
-        log.info("Текущее количество пользователей: {}", inMemoryUserStorage.users.size());
         return userStorage.get();
     }
 
     public Optional<User> getUserByID(Long id) {
-        if (!inMemoryUserStorage.users.containsKey(id)) {
+        if (userStorage.getUserByID(id).isEmpty()) {
             log.info("Пользователь под ID-" + id + " , не найден");
             throw new ParameterNotFoundException("Пользователь под ID-" + id + " , не найден");
         }
