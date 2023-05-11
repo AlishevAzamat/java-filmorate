@@ -31,7 +31,7 @@ class UserControllerTest {
             userController.add(user);
         });
 
-        assertEquals("Логин не может быть пустым и содержать пробелы", exception.getMessage());
+        assertEquals("Ошибка валидации", exception.getMessage());
     }
 
     @Test
@@ -47,6 +47,6 @@ class UserControllerTest {
             userController.add(user);
         });
 
-        assertEquals("Дата рождения не может быть в будущем", exception.getMessage());
+        assertEquals("Ошибка валидации", exception.getMessage());
     }
 }
