@@ -2,36 +2,44 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ParameterNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-
+    @Qualifier("filmDbStorage")
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final InMemoryFilmStorage inMemoryFilmStorage;
+    private final GenreService genreService;
 
 
     public Film add(Film film) {
+        inMemoryFilmStorage.validate(film);
         if (filmStorage.add(film).isEmpty()) {
             throw new ValidationException("Ошибка валидации");
+        }
+        if (film.getGenres() != null) {
+            genreService.addFilmsGenre(film.getId(), film.getGenres());
         }
         log.info("Добавлен фильм под названием " + film.getName());
         return film;
     }
 
     public Film put(Film film) {
+        getFilmById(film.getId());
+        if (film.getGenres() != null) {
+            genreService.deleteFilmsGenre(film.getId());
+            genreService.addFilmsGenre(film.getId(), film.getGenres());
+        }
         if (filmStorage.put(film).isEmpty()) {
             log.info("Фильм " + film.getId() + " не найден");
             throw new ParameterNotFoundException("Фильм " + film.getId() + " не найден");
@@ -40,51 +48,24 @@ public class FilmService {
         return film;
     }
 
-    public Collection<Film> get() {
-        return filmStorage.get();
+    public List<Film> get() {
+        List<Film> films = filmStorage.get();
+        genreService.addGenres(films);
+        log.info("Получен список фильмов");
+        return films;
     }
 
-    public Optional<Film> getFilmById(Long id) {
-        if (filmStorage.getFilmById(id).isEmpty()) {
-            log.info("Фильм " + id + " не найден");
-            throw new ParameterNotFoundException("Фильм " + id + " не найден");
-        }
+    public Film getFilmById(Long id) {
+        Film film = filmStorage.getFilmById(id);
+        genreService.addGenres(List.of(film));
         log.info("Запрошен фильм под ID {}", id);
-        return filmStorage.getFilmById(id);
+        return film;
     }
 
-    public void addLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId)
-                .orElseThrow(() -> new ParameterNotFoundException(""));
-        User user = userStorage.getUserByID(userId)
-                .orElseThrow(() -> new ParameterNotFoundException(""));
-        Set<Long> userLikes = film.getLikes();
-        if (userLikes.contains(userId)) {
-            log.info("Лайк уже был поставлен пользователем {}", user.getName());
-            throw new IncorrectParameterException("Лайк уже был поставлен пользователем " + user.getName());
-        }
-        userLikes.add(user.getId());
-        log.info("Пользователь {} поставил лайк на фильм {}", user.getName(), film.getName());
-    }
-
-    public void deleteLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId)
-                .orElseThrow(() -> new ParameterNotFoundException(""));
-        User user = userStorage.getUserByID(userId)
-                .orElseThrow(() -> new ParameterNotFoundException(""));
-        Set<Long> userLikes = film.getLikes();
-        if (!userLikes.contains(userId)) {
-            log.info("Лайк не был поставлен пользователем {}", user.getName());
-            throw new IncorrectParameterException("Лайк не был поставлен пользователем " + user.getName());
-        }
-        userLikes.remove(userId);
-        log.info("Пользователь {} удалили лайк", user.getName());
-    }
-
-    public List<Film> getSortFilm(Long count) {
-        return filmStorage.get().stream()
-                .sorted(Comparator.comparingInt(f -> f.getLikes().size() * (-1)))
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> getPopular(Long count) {
+        List<Film> films = filmStorage.getPopular(count);
+        genreService.addGenres(films);
+        log.info("Получен список популярных фильмов");
+        return films;
     }
 }
