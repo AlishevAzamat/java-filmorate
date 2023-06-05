@@ -49,13 +49,7 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> put(Film film) {
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ? , mpa_id = ?" +
                 " WHERE id = ?";
-        jdbcTemplate.update(sqlQuery
-                , film.getName()
-                , film.getDescription()
-                , film.getReleaseDate()
-                , film.getDuration()
-                , film.getMpa().getId()
-                , film.getId());
+        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
         return Optional.of(film);
     }
 

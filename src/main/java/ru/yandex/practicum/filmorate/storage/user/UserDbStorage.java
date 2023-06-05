@@ -36,12 +36,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Optional<User> put(User user) {
         String sqlQuery = "UPDATE users SET email = ?,login = ?, name = ?, birthday = ? WHERE id = ?";
-        jdbcTemplate.update(sqlQuery
-                , user.getEmail()
-                , user.getLogin()
-                , user.getName()
-                , user.getBirthday()
-                , user.getId());
+        jdbcTemplate.update(sqlQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return Optional.of(user);
     }
 
