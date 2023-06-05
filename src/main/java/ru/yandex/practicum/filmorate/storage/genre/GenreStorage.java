@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.film.Genre;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 
 public interface GenreStorage {
 
