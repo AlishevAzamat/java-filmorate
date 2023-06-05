@@ -18,15 +18,13 @@ public class LikeService {
         filmService.getFilmById(filmId);
         userService.getUserByID(userId);
         likesStorage.addLike(filmId, userId);
-        log.info("Пользователь {} поставил лайк на фильм {}", userService.getUserByID(userId).getName()
-                , filmService.getFilmById(filmId).getName());
+        log.info("Пользователь {} поставил лайк на фильм {}", userService.getUserByID(userId).getName(), filmService.getFilmById(filmId).getName());
     }
 
     public void deleteLike(Long filmId, Long userId) {
         filmService.getFilmById(filmId);
         userService.getUserByID(userId);
         likesStorage.deleteLike(filmId, userId);
-        log.info("Пользователь {} удалил лайк на фильм {}", userService.getUserByID(userId).getName()
-                , filmService.getFilmById(filmId).getName());
+        log.info("Пользователь {} удалил лайк на фильм {}", userService.getUserByID(userId).getName(), filmService.getFilmById(filmId).getName());
     }
 }
