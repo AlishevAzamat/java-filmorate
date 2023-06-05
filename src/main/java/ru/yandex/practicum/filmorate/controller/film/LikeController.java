@@ -14,15 +14,13 @@ public class LikeController {
     private final LikeService likeService;
 
     @PutMapping(path = "/films/{id}/like/{userId}")
-    public String addLike(@PathVariable(value = "id") Long filmId
-            , @PathVariable(value = "userId") Long userId) {
+    public String addLike(@PathVariable(value = "id") Long filmId, @PathVariable(value = "userId") Long userId) {
         likeService.addLike(filmId, userId);
         return "Пользователь поставил лайк";
     }
 
     @DeleteMapping(path = "/films/{id}/like/{userId}")
-    public String deleteLike(@PathVariable(value = "id") Long filmId
-            , @PathVariable(value = "userId") Long userId) {
+    public String deleteLike(@PathVariable(value = "id") Long filmId, @PathVariable(value = "userId") Long userId) {
         likeService.deleteLike(filmId, userId);
         return "Пользователь удалил лайк";
     }
