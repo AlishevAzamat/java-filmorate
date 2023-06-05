@@ -51,8 +51,7 @@ public class UserDbStorage implements UserStorage {
     public User getUserByID(Long id) {
         String sqlQuery = "SELECT * " +
                 "FROM users WHERE id = ?";
-        return jdbcTemplate.query(sqlQuery, new Object[]{id}
-                        , new BeanPropertyRowMapper<>(User.class))
+        return jdbcTemplate.query(sqlQuery, new Object[]{id}, new BeanPropertyRowMapper<>(User.class))
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ParameterNotFoundException("Пользователь под ID - '" + id + "' , не найден"));
