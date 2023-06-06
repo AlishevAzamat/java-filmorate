@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.controller.film;
+package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.service.film.LikeService;
+import ru.yandex.practicum.filmorate.service.LikeService;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,15 +1,15 @@
-package ru.yandex.practicum.filmorate.model.film;
+package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
-@Data
 @Builder
-public class Likes {
+@Data
+public class Friends {
     @NotNull
-    Long filmId;
+    private Long userId;
     @NotNull
-    Long userId;
+    private Long friendId;
 }

@@ -1,36 +1,26 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Component("inMemoryFilmStorage")
+
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
     private Long generatorId = 1L;
-    private final LocalDate date = LocalDate.of(1895, 12, 28);
-
 
     @Override
-    public Optional<Film> add(@RequestBody Film film) {
-        try {
-            validate(film);
-        } catch (ValidationException e) {
-            return Optional.empty();
-        }
+    public Film add(@RequestBody Film film) {
         film.setId(generatorId++);
         films.put(film.getId(), film);
-        return Optional.of(film);
+        return film;
     }
 
     @Override
@@ -59,12 +49,5 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(Long count) {
         return null;
-    }
-
-    public void validate(Film film) {
-        if (film.getReleaseDate().isBefore(date)) {
-            log.info("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
-            throw new ValidationException("Дата публикации фильма раньше положенного, фильм должен быть опубликован не раньше чем - " + date);
-        }
     }
 }

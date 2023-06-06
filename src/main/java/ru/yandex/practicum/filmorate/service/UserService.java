@@ -1,16 +1,14 @@
-package ru.yandex.practicum.filmorate.service.user;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ParameterNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.user.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,26 +16,17 @@ import java.util.Collection;
 public class UserService {
     @Qualifier("userDbStorage")
     private final UserStorage userStorage;
-    private final InMemoryUserStorage inMemoryUserStorage;
 
-
-    public User add(User user) {
-        inMemoryUserStorage.validate(user);
-        if (userStorage.add(user).isEmpty()) {
-            throw new ValidationException("Ошибка валидации");
-        }
+    public Optional<User> add(User user) {
+        validate(user);
         log.info("Добавлен пользователь под именем " + user.getName());
-        return user;
+        return userStorage.add(user);
     }
 
-    public User put(User user) {
+    public Optional<User> put(User user) {
         getUserByID(user.getId());
-        if (userStorage.put(user).isEmpty()) {
-            log.info("Пользователь '" + user.getId() + "' не найден");
-            throw new ParameterNotFoundException("Пользователь не найден");
-        }
         log.info("Пользователь " + user.getName() + " под номерам ID - '" + user.getId() + "' обновлен");
-        return user;
+        return userStorage.put(user);
     }
 
     public Collection<User> get() {
@@ -48,5 +37,12 @@ public class UserService {
     public User getUserByID(Long id) {
         log.info("Запрошен пользователем под ID {}", id);
         return userStorage.getUserByID(id);
+    }
+
+    private void validate(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            log.info("Пользователь не заполнил Имя");
+            user.setName(user.getLogin());
+        }
     }
 }

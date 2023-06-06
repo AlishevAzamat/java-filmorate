@@ -1,12 +1,13 @@
-package ru.yandex.practicum.filmorate.controller.user;
+package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.user.User;
-import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 
 
 @RestController
@@ -15,12 +16,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(path = "/users")
-    public User add(@RequestBody @Valid User user) {
+    public Optional<User> add(@RequestBody @Valid User user) {
         return userService.add(user);
     }
 
     @PutMapping(path = "/users")
-    public User put(@RequestBody @Valid User user) {
+    public Optional<User> put(@RequestBody @Valid User user) {
         return userService.put(user);
     }
 

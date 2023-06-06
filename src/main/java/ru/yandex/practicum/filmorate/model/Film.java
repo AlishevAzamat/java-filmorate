@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.film;
+package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
@@ -25,6 +25,6 @@ public class Film {
     @PositiveOrZero
     private Integer duration;
     @NotNull
-    Mpa mpa;
-    LinkedHashSet<Genre> genres;
+    private Mpa mpa;
+    private LinkedHashSet<Genre> genres;
 }

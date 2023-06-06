@@ -2,14 +2,15 @@ package ru.yandex.practicum.filmorate.DbTests;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.exception.ParameterNotFoundException;
-import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.model.film.Mpa;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.time.LocalDate;
@@ -30,7 +31,7 @@ public class FilmDbTest {
     @Test
     @DisplayName("Поиск фильма по ID")
     public void getFilmById_successful() {
-        Optional<Film> film = filmDbStorage.add(Film.builder()
+        Optional<Film> film = Optional.ofNullable(filmDbStorage.add(Film.builder()
                 .name("ТЕСТ")
                 .description("ТЕСТ")
                 .releaseDate(LocalDate.of(2022, 1, 1))
@@ -39,7 +40,7 @@ public class FilmDbTest {
                         .id(2L)
                         .build())
                 .build()
-        );
+        ));
 
         Optional<Film> filmOptional = Optional.ofNullable(filmDbStorage.getFilmById(1L));
 
@@ -72,7 +73,7 @@ public class FilmDbTest {
     @DisplayName("Список популярных фильмов")
     public void getPopularFilm_successful() {
         filmDbStorage.add(Film.builder()
-                .name("ТЕСТ1")
+                .name("ТЕСТ123")
                 .description("ТЕСТ")
                 .releaseDate(LocalDate.of(2022, 2, 1))
                 .duration(107)
@@ -82,7 +83,7 @@ public class FilmDbTest {
                 .build()
         );
         filmDbStorage.add(Film.builder()
-                .name("ТЕСТ2")
+                .name("ТЕСТ2456")
                 .description("ТЕСТ")
                 .releaseDate(LocalDate.of(2022, 2, 1))
                 .duration(109)
@@ -97,10 +98,34 @@ public class FilmDbTest {
     }
 
     @Test
-    @Order(1)
     @DisplayName("Получение всех фильмов")
     public void getAllFilms_successful() {
         assertNotNull(filmDbStorage.get());
         assertEquals(1, filmDbStorage.get().size());
+    }
+
+    @Test
+    @DisplayName("Ошибка дубликата при создании фильма")
+    public void addFilm_error() {
+        filmDbStorage.add(Film.builder()
+                .name("ТЕСТ1")
+                .description("ТЕСТ")
+                .releaseDate(LocalDate.of(1895, 12, 28))
+                .duration(107)
+                .mpa(Mpa.builder()
+                        .id(2L)
+                        .build())
+                .build()
+        );
+        assertThrows(DuplicateKeyException.class, () -> filmDbStorage.add(Film.builder()
+                .name("ТЕСТ1")
+                .description("ТЕСТ")
+                .releaseDate(LocalDate.of(1895, 12, 28))
+                .duration(107)
+                .mpa(Mpa.builder()
+                        .id(2L)
+                        .build())
+                .build()
+        ));
     }
 }

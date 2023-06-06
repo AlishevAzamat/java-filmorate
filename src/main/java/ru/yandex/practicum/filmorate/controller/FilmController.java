@@ -1,15 +1,16 @@
-package ru.yandex.practicum.filmorate.controller.film;
+package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -25,7 +26,7 @@ public class FilmController {
     }
 
     @PutMapping(path = "/films")
-    public Film put(@RequestBody @Valid Film film) {
+    public Optional<Film> put(@RequestBody @Valid Film film) {
         return filmService.put(film);
     }
 

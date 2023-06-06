@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.service.film;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.model.film.Genre;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.LinkedHashSet;
@@ -35,7 +35,7 @@ public class GenreService {
         genreStorage.deleteFilmsGenre(filmId);
     }
 
-    public void addGenres(List<Film> films) {
+    public void fillFilmsGenres(List<Film> films) {
         genreStorage.loadGenres(films);
     }
 }
